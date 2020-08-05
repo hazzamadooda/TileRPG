@@ -1,5 +1,6 @@
 import sys
 import pygame as pg
+import time
 
 #Start date: Wednesday 29th / 7 / 2020
 #First things to implement:
@@ -8,17 +9,27 @@ import pygame as pg
 
 
 width, height = 1440, 880
-hbox, vbox = 20, 20
+hboundaries, vboundaries = 20, 20
 red = (255,0,0)
 green = (50,205,50)
 white = (255,255,255)
 screen = pg.display.set_mode((width, height))
 clock = pg.time.Clock()
 #pos where it starts
-rect = pg.Rect(300, 220, hbox, vbox)
+rect = pg.Rect(300, 220, hboundaries, vboundaries)
 velocity = (0, 0)
 game_1_stock_1 = str(rect.x),(rect.y)
 Travelers_lounge_background = pg.image.load("Image.png")
+boundaries = []
+
+
+#classes
+class boundary:
+    def __init__(self, position, size, color):
+        self.position = position
+        self.size = size
+        self.color = color
+
 
 
 
@@ -29,21 +40,25 @@ def textBoxBlack(text, size, position, color):
     textRect.center = position
     screen.blit(text, textRect)
 
-def draw_the_map_front():
-    #TopBar
-    pg.draw.rect(screen,red,(0,0,1440,15))
-    pg.draw.rect(screen,red,(143,175,227,15))
 
-def draw_the_map_behind():
-    return
 
 
 def main():
-    global box_colour
+    global boundary_colour
     myfont=pg.font.SysFont("freesansbold.ttf", 20)
     done = False
     colour = False
-    box_colour = red
+    boundary_colour = red
+
+    #boundaries_tile
+    boundaries.append(boundary((0,0),(1440,55),red))
+    boundaries.append(boundary((0,825),(1440,55),red))
+    boundaries.append(boundary((585,300),(40,250),red))
+    boundaries.append(boundary((813,300),(40,250),red))
+
+
+
+
 
 
     while not done:
@@ -58,56 +73,84 @@ def main():
 
 
         if keys[pg.K_a]:  #to move left
-            rect.x -= move
+            collide = False
+            for b in boundaries:
+                testRect = rect.copy()
+                testRect.x -= move
+                if testRect.colliderect((b.position, b.size)):
+                    collide = True
+                    break
+            if collide == False:
+                rect.x -= move
         
         if keys[pg.K_d]: #to move right
-            rect.x += move
+            collide = False
+            for b in boundaries:
+                testRect = rect.copy()
+                testRect.x += move
+                if testRect.colliderect((b.position, b.size)):
+                    collide = True
+                    break
+            if collide == False:
+                rect.x += move
 
 
-        if rect.x > 0 and rect.y > -5 and rect.x < 1440 and rect.y < 15:
-            colour = True
-        else:
-            colour = False
+        
 
         if keys[pg.K_w]:  #to move up
-            rect.y -= move
+            collide = False
+            for b in boundaries:
+                testRect = rect.copy()
+                testRect.y -= move
+                if testRect.colliderect((b.position, b.size)):
+                    collide = True
+                    break
+            if collide == False:
+                rect.y -= move
 
         if keys[pg.K_s]: #to move down
-            rect.y += move
+            collide = False
+            for b in boundaries:
+                testRect = rect.copy()
+                testRect.y += move
+                if testRect.colliderect((b.position, b.size)):
+                    collide = True
+                    break
+            if collide == False:
+                rect.y += move
         
 
 
         #boundary:
         #1
-        if rect.y < 15: rect.y = 15
+        if rect.y < 15: 
+            rect.y = 15
         #2
-        if rect.x < 0:
+        if rect.x > 1440:
             rect.x = 0
         #3
-        if rect.x > width-hbox:
-            rect.x = width - hbox
+        if rect.x < 0:
+            rect.x = 1440
+
+        if rect.x > 850 and rect.x < 855 and rect.y > 350 and rect.y < 480:
+            rect.x = 550
+            rect.y = rect.y
+        if rect.x > 580 and rect.x < 590 and rect.y > 350 and rect.y < 480:
+            rect.x = 860
+            rect.y = rect.y
         #4
-        if rect.y > height - hbox:
-            rect.y = height - vbox
-        #box_boundary's:
-        if rect.y > 158 and rect.y < 187 and rect.x > 125 and rect.x < 370: 
-            rect.y = 15
-           
-            
-        #box's:
+        if rect.y > height - hboundaries:
+            rect.y = height - vboundaries
 
-
-        if colour == True:
-            box_colour = green
-        if colour == False:
-            box_colour = red
-
+        
+        
         screen.fill((0, 0, 0))
         screen.blit(Travelers_lounge_background, (0, 0))
-        draw_the_map_front()
+        ## draw all boundaries
+        for b in boundaries:
+            pg.draw.rect(screen, b.color, ((b.position),(b.size)))
         pg.display.update()
-        pg.draw.rect(screen, (box_colour), rect)
-        pg.draw.rect(screen, (box_colour), rect)
+        pg.draw.rect(screen, (boundary_colour), rect)
 
 
         pg.display.flip()
