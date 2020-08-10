@@ -7,6 +7,20 @@ import time
 #Have to draw out the map and illustrate boxes.
 #yeah that's all for now.
 
+#
+#grid = []
+#
+#with open('test.txt', 'r') as f:
+#    f_contents = f.read()
+#
+#grid.extend(f_contents)
+#
+#if '2' in grid[1:12]:
+#    print('ahshdhahsd')
+#else:
+#    print("hehe")
+#
+#
 
 width, height = 1440, 880
 hboundaries, vboundaries = 20, 20
@@ -140,20 +154,19 @@ def main():
             rect.y = rect.y
         #4
         if rect.y > height - hboundaries:
-            rect.y = height - vboundaries
 
-        
-        
-        screen.fill((0, 0, 0))
-        screen.blit(Travelers_lounge_background, (0, 0))
-        ## draw all boundaries
+
+            screen.fill((0, 0, 0))
         for b in boundaries:
             pg.draw.rect(screen, b.color, ((b.position),(b.size)))
-        pg.display.update()
+        screen.blit(Travelers_lounge_background, (0, 0))
         pg.draw.rect(screen, (boundary_colour), rect)
 
+        ## draw all boundaries
+        
 
         pg.display.flip()
+        pg.display.update()
         clock.tick(30)
         
 
