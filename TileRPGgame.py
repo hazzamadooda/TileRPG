@@ -1,40 +1,16 @@
-import sys
-import pygame as pg
+import pygame
+from collections import Counter
 import time
-
-#Start date: Wednesday 29th / 7 / 2020
-#First things to implement:
-#Have to draw out the map and illustrate boxes.
-#yeah that's all for now.
-
-#
-#grid = []
-#
-#with open('test.txt', 'r') as f:
-#    f_contents = f.read()
-#
-#grid.extend(f_contents)
-#
-#if '2' in grid[1:12]:
-#    print('ahshdhahsd')
-#else:
-#    print("hehe")
-#
-#
-
+grid = []
+water = []
+drawing_box_variable = 0
+blue = (255,255,8)
+red = (0,50,255)
 width, height = 1440, 880
-hboundaries, vboundaries = 20, 20
-red = (255,0,0)
-green = (50,205,50)
-white = (255,255,255)
-screen = pg.display.set_mode((width, height))
-clock = pg.time.Clock()
-#pos where it starts
-rect = pg.Rect(300, 220, hboundaries, vboundaries)
-velocity = (0, 0)
-game_1_stock_1 = str(rect.x),(rect.y)
-Travelers_lounge_background = pg.image.load("Image.png")
-boundaries = []
+screen = pygame.display.set_mode((width, height))
+keys = pygame.key.get_pressed()
+done = False
+clock = pygame.time.Clock()
 
 
 #classes
@@ -45,135 +21,71 @@ class boundary:
         self.color = color
 
 
+def import_grid_1():
+    with open('test.txt', 'r') as f:
+        f_contents = f.read()
+        grid.extend(f_contents)
+
+def start_game():
+    global grid
+    initialRunner = True
+    numbY = 0
+    numbX = 0
+    screen.fill((0, 0, 0))
+    pygame.display.update()
+    
+    
+    while True:
+        clock.tick(60)
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+            
+        if initialRunner == True:
+            for value in range (0,110):
+                if value == 109:
+                    value = 0
+                            
+                else:
+                    if grid[value] == '1':
+                        pygame.draw.rect(screen,blue,(numbX,numbY,144,88))
+                        numbX += 144
+                    if numbX == 1440:
+                        numbY += 88
+                        numbX = 0
+
+                    elif grid[value] == '2':
+                        pygame.draw.rect(screen,red,(numbX,numbY,144,88))
+                        numbX += 144
+                        if numbX == 1440:
+                            numbY += 88
+                            numbX = 0
+                            print(numbX)
+                    else:
+                        print('space')
+                    value += 1
+            initialRunner = False
+                
+            
+        pygame.display.update()
+            
+
+            
+            
+            
+    
 
 
-def textBoxBlack(text, size, position, color):
-    font = pg.font.Font('freesansbold.ttf', size)
-    text = font.render(text, True, color, (255,0,0))
-    textRect = text.get_rect()
-    textRect.center = position
-    screen.blit(text, textRect)
-
-
-
-
-def main():
-    global boundary_colour
-    myfont=pg.font.SysFont("freesansbold.ttf", 20)
-    done = False
-    colour = False
-    boundary_colour = red
-
-    #boundaries_tile
-    boundaries.append(boundary((0,0),(1440,55),red))
-    boundaries.append(boundary((0,825),(1440,55),red))
-    boundaries.append(boundary((585,300),(40,250),red))
-    boundaries.append(boundary((813,300),(40,250),red))
-
-
-
-
-
-
-    while not done:
-        for event in pg.event.get():
-            if event.type == pg.QUIT:
-                done = True
-
-        keys = pg.key.get_pressed()
-
-        # booster
-        move = 18 if keys[pg.K_LSHIFT] else 4
-
-
-        if keys[pg.K_a]:  #to move left
-            collide = False
-            for b in boundaries:
-                testRect = rect.copy()
-                testRect.x -= move
-                if testRect.colliderect((b.position, b.size)):
-                    collide = True
-                    break
-            if collide == False:
-                rect.x -= move
-        
-        if keys[pg.K_d]: #to move right
-            collide = False
-            for b in boundaries:
-                testRect = rect.copy()
-                testRect.x += move
-                if testRect.colliderect((b.position, b.size)):
-                    collide = True
-                    break
-            if collide == False:
-                rect.x += move
-
+def start_game_functions():
+        pygame.init()
+        import_grid_1()
+        start_game()
 
         
+    
+start_game_functions()
 
-        if keys[pg.K_w]:  #to move up
-            collide = False
-            for b in boundaries:
-                testRect = rect.copy()
-                testRect.y -= move
-                if testRect.colliderect((b.position, b.size)):
-                    collide = True
-                    break
-            if collide == False:
-                rect.y -= move
-
-        if keys[pg.K_s]: #to move down
-            collide = False
-            for b in boundaries:
-                testRect = rect.copy()
-                testRect.y += move
-                if testRect.colliderect((b.position, b.size)):
-                    collide = True
-                    break
-            if collide == False:
-                rect.y += move
-        
-
-
-        #boundary:
-        #1
-        if rect.y < 15: 
-            rect.y = 15
-        #2
-        if rect.x > 1440:
-            rect.x = 0
-        #3
-        if rect.x < 0:
-            rect.x = 1440
-
-        if rect.x > 850 and rect.x < 855 and rect.y > 350 and rect.y < 480:
-            rect.x = 550
-            rect.y = rect.y
-        if rect.x > 580 and rect.x < 590 and rect.y > 350 and rect.y < 480:
-            rect.x = 860
-            rect.y = rect.y
-        #4
-        if rect.y > height - hboundaries:
-
-
-            screen.fill((0, 0, 0))
-        for b in boundaries:
-            pg.draw.rect(screen, b.color, ((b.position),(b.size)))
-        screen.blit(Travelers_lounge_background, (0, 0))
-        pg.draw.rect(screen, (boundary_colour), rect)
-
-        ## draw all boundaries
-        
-
-        pg.display.flip()
-        pg.display.update()
-        clock.tick(30)
-        
-
-
-if __name__ == '__main__':
-
-    pg.init()
-    main()
-    pg.quit()
-    sys.exit()
+#ideas: so find 1 line for the Y, then get the width of the screen and divide it by 10 to get each box space. From there we can
+#like get a variable that adds the number for above each time that it is used I think. So like:
+#The first one would be 50(pixels), then it would add 50 to the variable and do it again, so it would be like 100 the next time.
+#Then it would keep on going until it reached the end of the list. 
