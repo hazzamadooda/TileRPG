@@ -65,7 +65,9 @@ def load_image():
 #---------------------------------------------------------------------------------------------------------------------------------------
 #---------------------------------------------------------------------------------------------------------------------------------------
 def start_game():
+    #bools
     movement = True
+
 
     vel = 5
     x = 88
@@ -80,16 +82,27 @@ def start_game():
 #---------------------------------------------------------------------------------------------------------------------------------------
 #---------------------------------------------------------------------------------------------------------------------------------------
     while True:
-        movement_hitbox_rect = pygame.draw.rect(screen, (0,255,0), (x + 10, y, 22, 44))
+        movement_hitbox_rect_X_UPPER = pygame.draw.rect(screen, (0,0,0), (x + 10, y, 22, 1))#top
+        movement_hitbox_rect_X_LOWER = pygame.draw.rect(screen, (0,0,0), (x + 10, y + 44, 22, 1))#bottom
+        movement_hitbox_rect_RIGHT_SIDE = pygame.draw.rect(screen, (0,0,0), (x + 32, y, 1, 44))#right
+        movement_hitbox_rect_LEFT_SIDE = pygame.draw.rect(screen, (0,0,0), (x + 10, y, 1, 44))#left side
+        pygame.display.update()
+
         for i in tile_1:
-            if movement_hitbox_rect.colliderect(pygame.draw.rect(screen, (255,255,255), (i))):
+            if movement_hitbox_rect_LEFT_SIDE.colliderect(pygame.draw.rect(screen, (255,255,255), (i))):
                 vel = 5
         for i in tile_2:
-            if movement_hitbox_rect.colliderect(pygame.draw.rect(screen, (255,255,255), (i))):
+            if movement_hitbox_rect_X_UPPER.colliderect(pygame.draw.rect(screen, (255,255,255), (i))):
                 vel = 2
         for i in tile_3:
-            if movement_hitbox_rect.colliderect(pygame.draw.rect(screen, (255,255,255), (i))):
-                print(i)
+            if movement_hitbox_rect_X_UPPER.colliderect(pygame.draw.rect(screen, (255,255,255), (i))):
+                print("uppercollision")
+            if movement_hitbox_rect_X_LOWER.colliderect(pygame.draw.rect(screen, (255,255,255), (i))):
+                print("lowercollision")
+            if movement_hitbox_rect_RIGHT_SIDE.colliderect(pygame.draw.rect(screen, (255,255,255), (i))):
+                print("rightcollision")
+            if movement_hitbox_rect_LEFT_SIDE.colliderect(pygame.draw.rect(screen, (255,255,255), (i))):
+                print("leftcollision")
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -133,19 +146,9 @@ def start_game():
             elif keys[pygame.K_RIGHT]or keys[pygame.K_d]:
                 x += vel
                 screen.blit(right_sprite, (x, y)) 
-            elif keys[pygame.K_LEFT] or keys[pygame.K_a]:
-                x -= vel
-                screen.blit(left_sprite, (x, y))
-            elif keys[pygame.K_DOWN]or keys[pygame.K_s]:
-                y += vel
-                screen.blit(back_sprite, (x, y))
-            elif keys[pygame.K_RIGHT]or keys[pygame.K_d]:
-                x += vel
-                screen.blit(right_sprite, (x, y))
             elif keys[pygame.K_LSHIFT]:
                 vel = 10
                 screen.blit(back_sprite, (x, y))
-
             else:
                 screen.blit(back_sprite, (x, y))
                 vel = 5
