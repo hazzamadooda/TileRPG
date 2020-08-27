@@ -67,6 +67,10 @@ def load_image():
 def start_game():
     #bools
     movement = True
+    Player_Up = True
+    Player_Down = True
+    Player_Left = True
+    Player_Right = True
 
 
     vel = 5
@@ -82,27 +86,30 @@ def start_game():
 #---------------------------------------------------------------------------------------------------------------------------------------
 #---------------------------------------------------------------------------------------------------------------------------------------
     while True:
-        movement_hitbox_rect_X_UPPER = pygame.draw.rect(screen, (0,0,0), (x + 10, y, 22, 1))#top
-        movement_hitbox_rect_X_LOWER = pygame.draw.rect(screen, (0,0,0), (x + 10, y + 44, 22, 1))#bottom
-        movement_hitbox_rect_RIGHT_SIDE = pygame.draw.rect(screen, (0,0,0), (x + 32, y, 1, 44))#right
-        movement_hitbox_rect_LEFT_SIDE = pygame.draw.rect(screen, (0,0,0), (x + 10, y, 1, 44))#left side
-        pygame.display.update()
+        movement_hitbox_rect_X_UPPER = pygame.draw.rect(screen, (0,0,0), (x + 18, y, 5, 1))#top
+        movement_hitbox_rect_X_LOWER = pygame.draw.rect(screen, (0,0,0), (x + 18, y + 44, 5, 1))#bottom
+        movement_hitbox_rect_RIGHT_SIDE = pygame.draw.rect(screen, (0,0,0), (x + 32, y + 11, 1, 20))#right
+        movement_hitbox_rect_LEFT_SIDE = pygame.draw.rect(screen, (0,0,0), (x + 10, y + 11, 1, 20))#left side
 
         for i in tile_1:
             if movement_hitbox_rect_LEFT_SIDE.colliderect(pygame.draw.rect(screen, (255,255,255), (i))):
                 vel = 5
+                Player_Up = True
+                Player_Down = True
+                Player_Left = True
+                Player_Right = True
         for i in tile_2:
             if movement_hitbox_rect_X_UPPER.colliderect(pygame.draw.rect(screen, (255,255,255), (i))):
                 vel = 2
-        for i in tile_3:
+        for i in tile_3:#collision stop movement
             if movement_hitbox_rect_X_UPPER.colliderect(pygame.draw.rect(screen, (255,255,255), (i))):
-                print("uppercollision")
+                Player_Up = False
             if movement_hitbox_rect_X_LOWER.colliderect(pygame.draw.rect(screen, (255,255,255), (i))):
-                print("lowercollision")
+                Player_Down = False
             if movement_hitbox_rect_RIGHT_SIDE.colliderect(pygame.draw.rect(screen, (255,255,255), (i))):
-                print("rightcollision")
+                Player_Right = False
             if movement_hitbox_rect_LEFT_SIDE.colliderect(pygame.draw.rect(screen, (255,255,255), (i))):
-                print("leftcollision")
+                Player_Left = False
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -116,39 +123,50 @@ def start_game():
 #---------------------------------------------------------------------------------------------------------------------------------------     
         if movement == True:
             if keys[pygame.K_w] and keys[pygame.K_d] or keys[pygame.K_UP] and keys[pygame.K_RIGHT]:
-                y -= vel
-                x += vel
                 screen.blit(forward_sprite, (x, y))
+                if Player_Up == True and Player_Right == True:
+                    y -= vel
+                    x += vel
             elif keys[pygame.K_w] and keys[pygame.K_a] or keys[pygame.K_UP] and keys[pygame.K_LEFT]:
-                y -= vel
-                x -= vel
                 screen.blit(forward_sprite, (x, y))
+                if Player_Up == True and Player_Left == True:
+                    y -= vel
+                    x -= vel
             elif keys[pygame.K_s] and keys[pygame.K_d] or keys[pygame.K_DOWN] and keys[pygame.K_RIGHT]:
-                y += vel
-                x += vel
                 screen.blit(back_sprite, (x, y))
+                if Player_Down == True and Player_Right == True:
+                    y += vel
+                    x += vel
+                    
             elif keys[pygame.K_s] and keys[pygame.K_a] or keys[pygame.K_DOWN] and keys[pygame.K_LEFT]:
-                y += vel
-                x -= vel
                 screen.blit(back_sprite, (x, y))
+                if Player_Down == True and Player_Left == True:
+                    y += vel
+                    x -= vel
+                    
             
             #Movement for basic key presses such as A or W. I have made it so that it also can detect movement
             #from the arrow keys. Cool little feature for user benefit. 
             elif keys[pygame.K_UP] or keys[pygame.K_w]:
-                y -= vel
                 screen.blit(forward_sprite, (x, y))
+                if Player_Up == True:
+                    y -= vel
+                    
             elif keys[pygame.K_LEFT] or keys[pygame.K_a]:
-                x -= vel
                 screen.blit(left_sprite, (x, y))
+                if Player_Left == True:
+                    x -= vel
+                    
             elif keys[pygame.K_DOWN]or keys[pygame.K_s]:
-                y += vel
                 screen.blit(back_sprite, (x, y))
+                if Player_Down == True:
+                    y += vel
+                    
             elif keys[pygame.K_RIGHT]or keys[pygame.K_d]:
-                x += vel
                 screen.blit(right_sprite, (x, y)) 
-            elif keys[pygame.K_LSHIFT]:
-                vel = 10
-                screen.blit(back_sprite, (x, y))
+                if Player_Right == True:
+                    x += vel
+                    
             else:
                 screen.blit(back_sprite, (x, y))
                 vel = 5
