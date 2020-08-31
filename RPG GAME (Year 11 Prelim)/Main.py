@@ -16,15 +16,19 @@ tile_2 = []
 tile_3 = []
 
 pause_true_or_false = 1
+imgnumb_1 = 0
+imgnumb_2 = 4
 #Weapons
 movement = True
 
+pause = False
+
 #SpriteLists
-sprite_list_1 = ['Sprites_1/Left_1.png', 'Sprites_1/Right_1.png', 'Sprites_1/Forward_1.png', 'Sprites_1/Back_1.png']
-sprite_list_2 = ['Sprites_1/Left_2.png', 'Sprites_1/Right_2.png', 'Sprites_1/Forward_2.png', 'Sprites_1/Back_2.png']
-sprite_list_3 = ['Sprites_1/Left_3.png', 'Sprites_1/Right_3.png', 'Sprites_1/Forward_3.png', 'Sprites_1/Back_3.png']
-sprite_list_4 = ['Sprites_1/Left_4.png', 'Sprites_1/Right_4.png', 'Sprites_1/Forward_4.png', 'Sprites_1/Back_4.png']
-sprite_list_5 = ['Sprites_1/Left_5.png', 'Sprites_1/Right_5.png', 'Sprites_1/Forward_5.png', 'Sprites_1/Back_5.png']
+sprite_list_1 = (['Sprites_1/Left_1.png', 'Sprites_1/Right_1.png', 'Sprites_1/Forward_1.png', 'Sprites_1/Back_1.png', 'Sprites_1/display_IMG_1.png'])
+sprite_list_2 = (['Sprites_1/Left_2.png', 'Sprites_1/Right_2.png', 'Sprites_1/Forward_2.png', 'Sprites_1/Back_2.png', 'Sprites_1/display_IMG_2.png'])
+sprite_list_3 = (['Sprites_1/Left_3.png', 'Sprites_1/Right_3.png', 'Sprites_1/Forward_3.png', 'Sprites_1/Back_3.png', 'Sprites_1/display_IMG_3.png'])
+sprite_list_4 = (['Sprites_1/Left_4.png', 'Sprites_1/Right_4.png', 'Sprites_1/Forward_4.png', 'Sprites_1/Back_4.png', 'Sprites_1/display_IMG_4.png'])
+sprite_list_5 = (['Sprites_1/Left_5.png', 'Sprites_1/Right_5.png', 'Sprites_1/Forward_5.png', 'Sprites_1/Back_5.png', 'Sprites_1/display_IMG_5.png'])
 
 
 what_sprite_list = [sprite_list_1, sprite_list_2, sprite_list_3, sprite_list_4, sprite_list_5]
@@ -39,24 +43,44 @@ img = Image.new('RGB', (800,800), color = (0,0,0))
 def pause_game():
     global movement
     global pause
+    global imgnumb_1
+    global imgnumb_2
     pause_true_or_false=False
-    pause = True
 
     while pause:
+        playerclickX, playerclickY = pygame.mouse.get_pos()
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
-            if event.type == pygame.KEYUP:
-                if event.key == pygame.K_p:
-                    pause_true_or_false = True
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_p and pause_true_or_false:
-                    print("L")
-                    pause = False
-                    movement = True
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                if imgnumb_1 == -5:
+                    imgnumb_1 = 0
+                elif imgnumb_1 == 4:
+                    imgnumb_1 = -1
+                    #Move Left
+                if 250 < playerclickX < 270:
+                    if 275 < playerclickY < 335:
+                        imgnumb_1 -= 1
+                    #Move Right
+                if 525 < playerclickX < 545:
+                    if 275 < playerclickY < 335:
+                        imgnumb_1 += 1
+                    #Exit
+                if 475 < playerclickX < 555:
+                    if 125 < playerclickY < 155:
+                        pause = False
+                        movement = True
 
-
-        pygame.draw.rect(screen, (0, 0, 0), (200, 200, 200, 200))
+            #main draw rect
+            pygame.draw.rect(screen, (255,255,255), (225, 100, 350, 450))
+            #Left movement rect
+            pygame.draw.rect(screen, (0,0,0), (250, 275, 20, 60))
+            #Right movement rect
+            pygame.draw.rect(screen, (0,0,0), (525, 275, 20, 60))
+            #Exit movement rect
+            pygame.draw.rect(screen, (0,0,0), (475, 125, 80, 30))
+            backgroundfile = pygame.image.load(what_sprite_list[imgnumb_1][imgnumb_2])
+            screen.blit(backgroundfile, (300,225))
         pygame.display.update()
 #---------------------------------------------------------------------------------------------------------------------------------------
 #---------------------------------------------------------------------------------------------------------------------------------------
@@ -185,7 +209,7 @@ def start_game():
 #---------------------------------------------------------------------------------------------------------------------------------------
 #---------------------------------------------------------------------------------------------------------------------------------------
 #---------------------------------------------------------------------------------------------------------------------------------------                  
-        if movement == True:      
+        if movement == True and pause == False:      
             #If movement is true, E.G When it's not looking at inventory then run the following
             
 
@@ -239,8 +263,7 @@ def start_game():
                     
             elif keys[pygame.K_p]:
                 movement = False
-                print("Pause")
-                pause_game()
+                pause = True
                 
             elif player_x < -35:
                 player_x = -40
@@ -258,6 +281,7 @@ def start_game():
                 MOUSEBUTTONDOWN = False
                 movement = True
                 screen.blit(back_sprite, (player_x, player_y))
+            pause_game()
         #functions
         #check colision function
         
