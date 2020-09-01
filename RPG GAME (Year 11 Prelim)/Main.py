@@ -1,11 +1,10 @@
-#---------------------------------------------------------------------------------------------------------------------------------------
-#---------------------------------------------------------------------------------------------------------------------------------------
-#---------------------------------------------------------------------------------------------------------------------------------------
 #import all the the neccesary moduels. 
 import pygame
 from PIL import Image, ImageDraw
 import time
 from pygame.locals import *
+import random
+
 #Grid from test.txt
 map_1 = []
 #Tile_1
@@ -15,15 +14,16 @@ tile_2 = []
 #Tile_3
 tile_3 = []
 
-pause_true_or_false = 1
 imgnumb_1 = 0
 imgnumb_2 = 4
-#Weapons
-movement = True
 
+bullet_shoot_x = 750
+bullet_shoot_y = 0
+movement = True
 pause = False
 
 #SpriteLists
+
 sprite_list_1 = (['Sprites_1/Left_1.png', 'Sprites_1/Right_1.png', 'Sprites_1/Forward_1.png', 'Sprites_1/Back_1.png', 'Sprites_1/display_IMG_1.png'])
 sprite_list_2 = (['Sprites_1/Left_2.png', 'Sprites_1/Right_2.png', 'Sprites_1/Forward_2.png', 'Sprites_1/Back_2.png', 'Sprites_1/display_IMG_2.png'])
 sprite_list_3 = (['Sprites_1/Left_3.png', 'Sprites_1/Right_3.png', 'Sprites_1/Forward_3.png', 'Sprites_1/Back_3.png', 'Sprites_1/display_IMG_3.png'])
@@ -37,6 +37,10 @@ width, height = 800, 800
 screen = pygame.display.set_mode((width, height))
 #For pillow
 img = Image.new('RGB', (800,800), color = (0,0,0))
+#Intro_thing_kinda_laggy
+Timer_for_rects = pygame.USEREVENT
+pygame.time.set_timer(Timer_for_rects, 1)
+intro_rect_animation=[]
 #---------------------------------------------------------------------------------------------------------------------------------------
 #---------------------------------------------------------------------------------------------------------------------------------------
 #---------------------------------------------------------------------------------------------------------------------------------------
@@ -45,7 +49,6 @@ def pause_game():
     global pause
     global imgnumb_1
     global imgnumb_2
-    pause_true_or_false=False
 
     while pause:
         playerclickX, playerclickY = pygame.mouse.get_pos()
@@ -94,6 +97,41 @@ def Start_game_import_grid():
 #---------------------------------------------------------------------------------------------------------------------------------------
 #---------------------------------------------------------------------------------------------------------------------------------------
 #---------------------------------------------------------------------------------------------------------------------------------------
+#---------------------!!!CAUTION!!!This intro is pretty laggy, skip to Start_Game_import_grid to skip lag if wanted!--------------------
+
+
+# def game_intro_scene():
+#     game_intro_scene_bool = True
+#     while game_intro_scene_bool == True:
+#         start_menu = True
+
+#         if pygame.event.get(pygame.QUIT): break
+#         for var in pygame.event.get():
+#             if var.type == Timer_for_rects: # this event happens every 1000 ms
+#                 intro_rect_animation.append(pygame.rect.Rect(random.randint(0, 80) * 10, random.randint(0, 80) * 10, 10, 10))
+#                 intro_rect_animation.append(pygame.rect.Rect(random.randint(0, 80) * 10, random.randint(0, 80) * 10, 10, 10))
+#                 intro_rect_animation.append(pygame.rect.Rect(random.randint(0, 80) * 10, random.randint(0, 80) * 10, 10, 10))
+#                 intro_rect_animation.append(pygame.rect.Rect(random.randint(0, 80) * 10, random.randint(0, 80) * 10, 10, 10))
+#             Number_of_rectsintro_rect_animation = (len(intro_rect_animation))
+#             if Number_of_rectsintro_rect_animation == 55000:
+#                 while start_menu == True:
+#                     start_menu = False
+#                     game_intro_scene_bool = False
+#                     pygame.time.wait(5000)
+#                     Start_game_import_grid()
+
+
+                
+                
+
+#         for a in intro_rect_animation:
+#             pygame.draw.rect(screen, (255,255,255), a)
+
+#         pygame.display.flip()
+
+#---------------------------------------------------------------------------------------------------------------------------------------
+#---------------------------------------------------------------------------------------------------------------------------------------
+#---------------------------------------------------------------------------------------------------------------------------------------
 def load_image():
     #:( globals. My OOP is not great and I have 2 weeks left to finish this task as of the 25/8/2020.
     #If I get time, i'll fix it up, for now however globals will have to do!
@@ -131,13 +169,15 @@ def start_game():
     #bools
     global movement
     global pause
-    global pause_true_or_false
+    global pying
+    global bullet_shoot_x
+    global bullet_shoot_y
     movement = True
     Player_Up = True
     Player_Down = True
     Player_Left = True
     Player_Right = True
-    MOUSEBUTTONDOWN = True
+    shoot_bullet = True
     #Lists:
     
 
@@ -153,21 +193,21 @@ def start_game():
 #---------------------------------------------------------------------------------------------------------------------------------------
 #---------------------------------------------------------------------------------------------------------------------------------------
     while True:
-        left_sprite = pygame.image.load(what_sprite_list[sprite_sheet_numb][0])
-        right_sprite = pygame.image.load(what_sprite_list[sprite_sheet_numb][1])
-        back_sprite = pygame.image.load(what_sprite_list[sprite_sheet_numb][2])
-        forward_sprite = pygame.image.load(what_sprite_list[sprite_sheet_numb][3])
+        left_sprite = pygame.image.load(what_sprite_list[imgnumb_1][0])
+        right_sprite = pygame.image.load(what_sprite_list[imgnumb_1][1])
+        back_sprite = pygame.image.load(what_sprite_list[imgnumb_1][2])
+        forward_sprite = pygame.image.load(what_sprite_list[imgnumb_1][3])
         player_x_click,player_y_click = pygame.mouse.get_pos()
         #Hit box for the main rectangle
         main_rect_hitbox = pygame.draw.rect(screen, (0,0,0), (player_x + 10, player_y, 20, 44))
         #Hit box for the Top, and it's just basically a short line
-        movement_hitbox_rect_X_UPPER = pygame.draw.rect(screen, (0,0,0), (player_x + 18, player_y, 5, 1))#top
+        movement_hitbox_rect_X_UPPER = pygame.draw.rect(screen, (0,0,0), (player_x + 18, player_y - 5, 5, 1))#top
         #Hit box for the Bottom, and it's just basically a short line
         movement_hitbox_rect_X_LOWER = pygame.draw.rect(screen, (0,0,0), (player_x + 18, player_y + 48, 6, 1))#bottom
         #Hit box for the Right, and it's just basically a short line
-        movement_hitbox_rect_RIGHT_SIDE = pygame.draw.rect(screen, (0,0,0), (player_x + 32, player_y + 11, 1, 20))#right
+        movement_hitbox_rect_RIGHT_SIDE = pygame.draw.rect(screen, (0,0,0), (player_x + 32, player_y + 5, 1,35))#right
         #Hit box for the Left, and it's just basically a short line
-        movement_hitbox_rect_LEFT_SIDE = pygame.draw.rect(screen, (0,0,0), (player_x + 10, player_y + 11, 1, 20))#left side
+        movement_hitbox_rect_LEFT_SIDE = pygame.draw.rect(screen, (0,0,0), (player_x + 10, player_y + 5, 1,35))#left side
         #Set the bool's to true, so they are not allways false
         Player_Up = True
         Player_Down = True
@@ -208,13 +248,50 @@ def start_game():
         #If movement == true will be useful for me as I 
 #---------------------------------------------------------------------------------------------------------------------------------------
 #---------------------------------------------------------------------------------------------------------------------------------------
-#---------------------------------------------------------------------------------------------------------------------------------------                  
+#---------------------------------------------------------------------------------------------------------------------------------------   
+        pygame.draw.rect(screen, (0,0,0), (750, player_y, 50, 50))               
         if movement == True and pause == False:      
+            bullet_shoot_x = 0
+            bullet_shoot_y = 0
             #If movement is true, E.G When it's not looking at inventory then run the following
-            
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                bullet_shoot_y = player_y_click
+                bullet_shoot_x = 750
+                shoot_bullet = True
+                while shoot_bullet == True:
+                    
+                    if bullet_shoot_x > 400 and bullet_shoot_x < 800:
+                        if bullet_shoot_y > 0 and bullet_shoot_y < 800:
+                            b = pygame.draw.rect(screen, (0,0,0), (bullet_shoot_x, player_y + 25, 5, 5))
+
+                            pygame.display.update()
+                            screen.blit(pying, (0,0))
+                            bullet_shoot_x -= 5
+                        else:
+                            shoot_bullet = False
+                    else:
+                        shoot_bullet = False
+                    
+    
+    
+    
 
 
-            if keys[pygame.K_w] and keys[pygame.K_d] or keys[pygame.K_UP] and keys[pygame.K_RIGHT]:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            elif keys[pygame.K_w] and keys[pygame.K_d] or keys[pygame.K_UP] and keys[pygame.K_RIGHT]:
                 #If the key W and D are pressed, then print the following
                 screen.blit(forward_sprite, (player_x, player_y))
                 #Print's the image even if you're not moving, so it can display something
