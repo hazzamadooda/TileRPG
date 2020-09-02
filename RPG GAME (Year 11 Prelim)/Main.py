@@ -13,26 +13,29 @@ tile_1 = []
 tile_2 = []
 #Tile_3
 tile_3 = []
-
-imgnumb_1 = 0
-imgnumb_2 = 4
-
-bullet_shoot_x = 750
-bullet_shoot_y = 0
-movement = True
-pause = False
-
-#SpriteLists
-
+#Sprites
 sprite_list_1 = (['Sprites_1/Left_1.png', 'Sprites_1/Right_1.png', 'Sprites_1/Forward_1.png', 'Sprites_1/Back_1.png', 'Sprites_1/display_IMG_1.png'])
 sprite_list_2 = (['Sprites_1/Left_2.png', 'Sprites_1/Right_2.png', 'Sprites_1/Forward_2.png', 'Sprites_1/Back_2.png', 'Sprites_1/display_IMG_2.png'])
 sprite_list_3 = (['Sprites_1/Left_3.png', 'Sprites_1/Right_3.png', 'Sprites_1/Forward_3.png', 'Sprites_1/Back_3.png', 'Sprites_1/display_IMG_3.png'])
 sprite_list_4 = (['Sprites_1/Left_4.png', 'Sprites_1/Right_4.png', 'Sprites_1/Forward_4.png', 'Sprites_1/Back_4.png', 'Sprites_1/display_IMG_4.png'])
 sprite_list_5 = (['Sprites_1/Left_5.png', 'Sprites_1/Right_5.png', 'Sprites_1/Forward_5.png', 'Sprites_1/Back_5.png', 'Sprites_1/display_IMG_5.png'])
-
-
 what_sprite_list = [sprite_list_1, sprite_list_2, sprite_list_3, sprite_list_4, sprite_list_5]
-#Pygame neccesary's 
+
+#variables
+
+imgnumb_1 = 0
+imgnumb_2 = 4
+Int_for_loading_bar = 0
+bullet_shoot_x = 750
+bullet_shoot_y = 0
+size_height = 1
+size_width = 1
+
+#Bools
+movement = True
+pause = False
+
+
 width, height = 800, 800
 screen = pygame.display.set_mode((width, height))
 #For pillow
@@ -40,7 +43,7 @@ img = Image.new('RGB', (800,800), color = (0,0,0))
 #Intro_thing_kinda_laggy
 Timer_for_rects = pygame.USEREVENT
 pygame.time.set_timer(Timer_for_rects, 1)
-intro_rect_animation=[]
+intro_rect_animation = []
 #---------------------------------------------------------------------------------------------------------------------------------------
 #---------------------------------------------------------------------------------------------------------------------------------------
 #---------------------------------------------------------------------------------------------------------------------------------------
@@ -98,37 +101,50 @@ def Start_game_import_grid():
 #---------------------------------------------------------------------------------------------------------------------------------------
 #---------------------------------------------------------------------------------------------------------------------------------------
 #---------------------!!!CAUTION!!!This intro is pretty laggy, skip to Start_Game_import_grid to skip lag if wanted!--------------------
+def game_intro_scene():
+    global size_height
+    global size_width    
+    game_intro_scene_bool = True
+    while game_intro_scene_bool == True:
+        start_menu = True
+        intthing = 0
 
 
-# def game_intro_scene():
-#     game_intro_scene_bool = True
-#     while game_intro_scene_bool == True:
-#         start_menu = True
+        if pygame.event.get(pygame.QUIT): break
+        for var in pygame.event.get():
+            if var.type == Timer_for_rects: # this event happens every 1000 ms
+                Width = random.sample(range(800), 100)
+                Height = random.sample(range(800), 100)
+                pygame.draw.rect(screen, (0,255,0), (Width[intthing], Height[intthing], size_height, size_width))
+                intthing += 1
+                if intthing == 15:
+                    size_height += 1
+                    size_width += 1
+                    intthing = 0
+                if size_height == 30:
+                    screen.fill((0,255,0))
+                    pygame.display.update()
+                    Loadingbarscreen() 
 
-#         if pygame.event.get(pygame.QUIT): break
-#         for var in pygame.event.get():
-#             if var.type == Timer_for_rects: # this event happens every 1000 ms
-#                 intro_rect_animation.append(pygame.rect.Rect(random.randint(0, 80) * 10, random.randint(0, 80) * 10, 10, 10))
-#                 intro_rect_animation.append(pygame.rect.Rect(random.randint(0, 80) * 10, random.randint(0, 80) * 10, 10, 10))
-#                 intro_rect_animation.append(pygame.rect.Rect(random.randint(0, 80) * 10, random.randint(0, 80) * 10, 10, 10))
-#                 intro_rect_animation.append(pygame.rect.Rect(random.randint(0, 80) * 10, random.randint(0, 80) * 10, 10, 10))
-#             Number_of_rectsintro_rect_animation = (len(intro_rect_animation))
-#             if Number_of_rectsintro_rect_animation == 55000:
-#                 while start_menu == True:
-#                     start_menu = False
-#                     game_intro_scene_bool = False
-#                     pygame.time.wait(5000)
-#                     Start_game_import_grid()
+        pygame.display.flip()
 
-
-                
-                
-
-#         for a in intro_rect_animation:
-#             pygame.draw.rect(screen, (255,255,255), a)
-
-#         pygame.display.flip()
-
+#---------------------------------------------------------------------------------------------------------------------------------------
+#---------------------------------------------------------------------------------------------------------------------------------------
+#---------------------------------------------------------------------------------------------------------------------------------------
+def Loadingbarscreen():
+    global Int_for_loading_bar  
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            pygame.quit()
+        if Int_for_loading_bar == 150:
+            Start_game_import_grid()
+        else:
+            pygame.draw.rect(screen, (255,255,255), (300, 350, 150, 35))
+            pygame.draw.rect(screen, (200,Int_for_loading_bar,3), (300, 350, Int_for_loading_bar, 35))
+            pygame.time.wait(10)
+            pygame.display.update
+            Int_for_loading_bar += 1
+        pygame.display.flip()
 #---------------------------------------------------------------------------------------------------------------------------------------
 #---------------------------------------------------------------------------------------------------------------------------------------
 #---------------------------------------------------------------------------------------------------------------------------------------
@@ -246,9 +262,6 @@ def start_game():
         #Display image that we made before.
         screen.blit(pying, (0,0))
         #If movement == true will be useful for me as I 
-#---------------------------------------------------------------------------------------------------------------------------------------
-#---------------------------------------------------------------------------------------------------------------------------------------
-#---------------------------------------------------------------------------------------------------------------------------------------   
         pygame.draw.rect(screen, (0,0,0), (750, player_y, 50, 50))               
         if movement == True and pause == False:      
             bullet_shoot_x = 0
@@ -260,32 +273,23 @@ def start_game():
                 shoot_bullet = True
                 while shoot_bullet == True:
                     
-                    if bullet_shoot_x > 400 and bullet_shoot_x < 800:
-                        if bullet_shoot_y > 0 and bullet_shoot_y < 800:
+                    if bullet_shoot_x > player_x and bullet_shoot_x < 800:
+                        if bullet_shoot_y > player_y and bullet_shoot_y < 800:
                             b = pygame.draw.rect(screen, (0,0,0), (bullet_shoot_x, player_y + 25, 5, 5))
-
                             pygame.display.update()
+                            for i in tile_3:#collision stop movement
+                            #If the Top line colides with the third tile, then set the bool to false
+                                if b.colliderect(pygame.draw.rect(screen, (255,255,255), (i))):
+                                    shoot_bullet = False
+
+
+                            
                             screen.blit(pying, (0,0))
                             bullet_shoot_x -= 5
                         else:
                             shoot_bullet = False
                     else:
                         shoot_bullet = False
-                    
-    
-    
-    
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -367,4 +371,4 @@ def start_game():
 #---------------------------------------------------------------------------------------------------------------------------------------
 #---------------------------------------------------------------------------------------------------------------------------------------            
 #Basically the main run function, it opens the text file and imports all of the neccesary data!
-Start_game_import_grid()
+game_intro_scene()
