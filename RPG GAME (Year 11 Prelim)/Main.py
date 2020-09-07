@@ -6,6 +6,7 @@ from pygame.locals import *
 import random
 import math
 pygame.font.init()
+Font = pygame.font.SysFont('Arial', 100)
 
 #Grid from test.txt
 map_1 = []
@@ -102,7 +103,7 @@ def Loadingbarscreen():
             if event.type == pygame.QUIT:
                 pygame.quit()
             if Int_for_loading_bar == 150:
-                Start_game_import_grid()
+                menu()
             elif Int_for_loading_bar != 150:
                 pygame.draw.rect(screen, (255,255,255), (300, 350, 150, 35))
                 pygame.draw.rect(screen, (200,Int_for_loading_bar,3), (300, 350, Int_for_loading_bar, 35))
@@ -113,7 +114,38 @@ def Loadingbarscreen():
 
 
 
-
+def menu():
+    menu = True
+    Start_game = Font.render('Start Game', False, (0, 0, 0))
+    Credits = Font.render('Credits', False, (255, 255, 255))
+    Tutorial = Font.render('Tutorial', False, (0, 0, 0))
+    quit_game = Font.render('Quit', False, (255, 255, 255))
+    while menu == True:
+        playerclickX,playerclickY = pygame.mouse.get_pos()
+        screen.fill((0,0,0))
+        pygame.draw.rect(screen, (255,255,255), (0, 0, 800, 200))
+        pygame.draw.rect(screen, (0,0,0), (0, 200, 800, 200))
+        pygame.draw.rect(screen, (255,255,255), (0, 400, 800, 200))
+        pygame.draw.rect(screen, (0,0,0), (0, 600, 800, 200))
+        screen.blit(Start_game,(250,75)), screen.blit(Credits,(295,275)), screen.blit(Tutorial,(290,475)), screen.blit(quit_game,(330,675))
+        
+        for event in pygame.event.get():
+                    if event.type == pygame.QUIT:
+                        pygame.quit()
+                    elif event.type == pygame.MOUSEBUTTONDOWN:
+                        if 0 < playerclickX < 800 and 0 < playerclickY < 200:
+                            menu = False
+                        if 0 < playerclickX < 800 and 200 < playerclickY < 400:
+                            print("Credits")
+                        if 0 < playerclickX < 800 and 400 < playerclickY < 600:
+                            print("Tutorial")
+                        if 0 < playerclickX < 800 and 600 < playerclickY < 800:
+                            pygame.quit()
+        pygame.display.update()
+    else:
+        Start_game_import_grid()
+    
+        
 
 #---------------------------------------------------------------------------------------------------------------------------------------
 #---------------------------------------------------------------------------------------------------------------------------------------
@@ -160,6 +192,25 @@ def load_image():
 #---------------------------------------------------------------------------------------------------------------------------------------
 #---------------------------------------------------------------------------------------------------------------------------------------
 #---------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+
+
+
+
+        
+def end_game():
+    return
+
+
+
+
+
+
+
+
+
 def start_game():
     #shhhh, I kinda need the all! I will learn OOP soon!
     global movement
@@ -182,12 +233,13 @@ def start_game():
     
 
     player_x = 80
-    player_y = 110
+    player_y = 400
     enemy_x = 750
     enemy_y = 110
     escape_open = 0
     sprite_sheet_numb = 0
     number_that_changes_For_bullet = 0
+    number_that_changes_For_player = 0
     
     #sprites
     #images
@@ -254,38 +306,45 @@ def start_game():
         screen.blit(pying, (0,0))
         #If movement == true will be useful for me as I 
         if imgnumb_1 == 0:
-            speed_of_bullet = 11
-            Player_Vel = 3
-        elif imgnumb_1 == 1 or imgnumb_1 == -4:
             speed_of_bullet = 10
-            Player_Vel = 5
-        elif imgnumb_1 == 2 or imgnumb_1 == -3:
+            Player_Vel = 2
+        elif imgnumb_1 == 1 or imgnumb_1 == -4:
             speed_of_bullet = 8
-            Player_Vel = 7
-        if imgnumb_1 == 3 or imgnumb_1 == -2:
+            Player_Vel = 4
+        elif imgnumb_1 == 2 or imgnumb_1 == -3:
             speed_of_bullet = 6
-            Player_Vel = 10
+            Player_Vel = 6
+        if imgnumb_1 == 3 or imgnumb_1 == -2:
+            speed_of_bullet = 4
+            Player_Vel = 8
         if imgnumb_1 == 4 or imgnumb_1 ==-1:
-            speed_of_bullet = 3
-            Player_Vel = 13
+            speed_of_bullet = 2
+            Player_Vel = 10
         if movement == True and pause == False:   
             if number_that_changes_For_bullet == 50:
                 print("Game over")
+            elif number_that_changes_For_player == 20:
+                enemy_player_thatmoves = pygame.draw.rect(screen, (255,0,0), (750, player_y, 50, 50))
+                enemy_player_thatmoves_1 = pygame.draw.rect(screen, (0,0,0), (750, player_y, 50, number_that_changes_For_bullet))
             else:
                 enemy_player_thatmoves = pygame.draw.rect(screen, (255,0,0), (750, player_y, 50, 50))
                 enemy_player_thatmoves_1 = pygame.draw.rect(screen, (0,0,0), (750, player_y, 50, number_that_changes_For_bullet))
+                player_health_bar = pygame.draw.rect(screen, (0,0,0), (player_x + 9, player_y - 8, 22, 5))
+                player_health_bar = pygame.draw.rect(screen, (255,0,0), (player_x + 9, player_y - 8, 22 - number_that_changes_For_player, 5))
                 
                         
                 
                 for enemy_bullet in enemy_bullets:
                         if enemy_bullet_shoot_x > 0 and enemy_bullet_shoot_x < 800 and enemy_bullet_shoot_y > 0 and enemy_bullet_shoot_y < 800:
-                            enemy_bullet[0] += 30*math.cos(enemy_bullet[2])
-                            enemy_bullet[1] += 30*math.sin(enemy_bullet[2])
+                            enemy_bullet[0] += 15*math.cos(enemy_bullet[2])
+                            enemy_bullet[1] += 15*math.sin(enemy_bullet[2])
                             enemy_bullet_shoot_rect = pygame.draw.rect(screen, (0,0,0), (enemy_bullet[0], enemy_bullet[1], 5, 5))
                         if enemy_bullet[0] < 0 or enemy_bullet[0] > 800 or enemy_bullet[1] < 0 or enemy_bullet[1] > 800:
                             enemy_bullets.remove(enemy_bullet)
                         elif main_rect_hitbox.colliderect(pygame.draw.rect(screen, (0,0,0), (enemy_bullet_shoot_rect))):
                             enemy_bullets.remove(enemy_bullet)
+                            number_that_changes_For_player += 2
+
                         
                             
                         for i in tile_3:
@@ -373,7 +432,7 @@ def start_game():
                     if Player_Right == True:
                         player_x += Player_Vel
                         
-                elif keys[pygame.K_ESCAPE]:
+                elif keys[pygame.K_e]:
                     pause = True
                         
             while pause == True:
