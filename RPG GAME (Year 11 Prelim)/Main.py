@@ -6,8 +6,8 @@ from pygame.locals import *
 import random
 import math
 pygame.font.init()
+#Font
 Font = pygame.font.SysFont('Arial', 100)
-
 #Grid from test.txt
 map_1 = []
 #Tile_1
@@ -16,22 +16,25 @@ tile_1 = []
 tile_2 = []
 #Tile_3
 tile_3 = []
-#Sprites
+#LOts of lists, that are not apparently lists or Something! I use them as lists, and I can call them easily
 sprite_list_1 = (['Sprites_1/Left_1.png', 'Sprites_1/Right_1.png', 'Sprites_1/Forward_1.png', 'Sprites_1/Back_1.png', 'Sprites_1/display_IMG_1.png'])
 sprite_list_2 = (['Sprites_1/Left_2.png', 'Sprites_1/Right_2.png', 'Sprites_1/Forward_2.png', 'Sprites_1/Back_2.png', 'Sprites_1/display_IMG_2.png'])
 sprite_list_3 = (['Sprites_1/Left_3.png', 'Sprites_1/Right_3.png', 'Sprites_1/Forward_3.png', 'Sprites_1/Back_3.png', 'Sprites_1/display_IMG_3.png'])
 sprite_list_4 = (['Sprites_1/Left_4.png', 'Sprites_1/Right_4.png', 'Sprites_1/Forward_4.png', 'Sprites_1/Back_4.png', 'Sprites_1/display_IMG_4.png'])
 sprite_list_5 = (['Sprites_1/Left_5.png', 'Sprites_1/Right_5.png', 'Sprites_1/Forward_5.png', 'Sprites_1/Back_5.png', 'Sprites_1/display_IMG_5.png'])
+list_for_bulletspeed = (['Speed_imgs/Speed_1.png', 'Speed_imgs/Speed_2.png', 'Speed_imgs/Speed_3.png', 'Speed_imgs/Speed_4.png', 'Speed_imgs/Speed_5.png',])
+list_for_tutorial = (['Tutorial_images/Tutorial_1.png','Tutorial_images/Tutorial_2.png','Tutorial_images/Tutorial_3.png'])
+game_win_or_loss = (['Win_or_loss/YouWinScreen.png', 'Win_or_loss/YouLostScreen.png'])
+#multidimesional array
 what_sprite_list = [sprite_list_1, sprite_list_2, sprite_list_3, sprite_list_4, sprite_list_5]
 intro_rect_animation = []
 enemy_bullets = []
 player_bullets = []
-
-#variables
+#variables, lots and lost of variables :(
 imgnumb_1 = 0
 imgnumb_2 = 4
 Int_for_loading_bar = 0
-enemy_bullet_shoot_x = 750
+enemy_bullet_shoot_x = 700
 enemy_bullet_shoot_y = 0
 player_bullet_shoot_x = 0
 player_bullet_shoot_y = 0
@@ -39,13 +42,13 @@ size_height = 1
 size_width = 1
 speed_of_bullet = 1
 Player_Vel = 5
-
-
+did_you_win_or_loose = 0
+what_tutorial_you_on = 0
 #Bools
 movement = True
 pause = False
 this_thing = True
-
+#Screen stuff
 width, height = 800, 800
 screen = pygame.display.set_mode((width, height))
 #For pillow
@@ -54,25 +57,20 @@ img = Image.new('RGB', (800,800), color = (0,0,0))
 timed_enemy_bullet_shoot = pygame.USEREVENT
 pygame.time.set_timer(timed_enemy_bullet_shoot, 1)
 MOVE_SIDE = 25
-
+#Timer for start screen AND enemy shooting! Works super duper weird!
 move_down_event = pygame.USEREVENT + 2
 pygame.time.set_timer(move_down_event, MOVE_SIDE)
 Timer_for_rects = pygame.USEREVENT
 pygame.time.set_timer(Timer_for_rects, 1)
 intro_rect_animation = []
-
-#---------------------------------------------------------------------------------------------------------------------------------------
-#---------------------------------------------------------------------------------------------------------------------------------------
 #---------------------!!!CAUTION!!!This intro is pretty laggy, skip to Start_Game_import_grid to skip lag if wanted!--------------------
-def game_intro_scene():
+def game_intro_scene(): #This function makes the starting load up screen. It is meant to be 30 seconds, but if you move your mouse, it takes 5!
     global size_height
     global size_width    
     game_intro_scene_bool = True
     while game_intro_scene_bool == True:
         start_menu = True
         intthing = 0
-
-
         if pygame.event.get(pygame.QUIT): break
         for var in pygame.event.get():
             if var.type == Timer_for_rects: # this event happens every 1000 ms
@@ -91,10 +89,7 @@ def game_intro_scene():
                     break
 
         pygame.display.update()
-#---------------------------------------------------------------------------------------------------------------------------------------
-#---------------------------------------------------------------------------------------------------------------------------------------
-#---------------------------------------------------------------------------------------------------------------------------------------
-def Loadingbarscreen():
+def Loadingbarscreen(): #This is my loading bar, with changing colours! Not needed, but cool
     global Int_for_loading_bar 
     global this_thing 
     
@@ -114,7 +109,7 @@ def Loadingbarscreen():
 
 
 
-def menu():
+def menu(): #The menu screen! Basic and easy
     menu = True
     Start_game = Font.render('Start Game', False, (0, 0, 0))
     Credits = Font.render('Credits', False, (255, 255, 255))
@@ -136,34 +131,26 @@ def menu():
                         if 0 < playerclickX < 800 and 0 < playerclickY < 200:
                             menu = False
                         if 0 < playerclickX < 800 and 200 < playerclickY < 400:
-                            print("Credits")
+                            Credits_Func()
                         if 0 < playerclickX < 800 and 400 < playerclickY < 600:
-                            print("Tutorial")
+                            Tutorial_game()
                         if 0 < playerclickX < 800 and 600 < playerclickY < 800:
                             pygame.quit()
         pygame.display.update()
     else:
         Start_game_import_grid()
     
-        
-
-#---------------------------------------------------------------------------------------------------------------------------------------
-#---------------------------------------------------------------------------------------------------------------------------------------
-#---------------------------------------------------------------------------------------------------------------------------------------
  
-def Start_game_import_grid():
-    bruhruhruhrr = ('Maps/Map_1.txt')
-    with open(bruhruhruhrr, 'r') as f:
+def Start_game_import_grid(): #Import grid from text file
+    Import_Grid = ('Maps/Map_1.txt')
+    with open(Import_Grid, 'r') as f:
         f_contents = f.read()
         map_1.extend(f_contents)
     load_image()
     start_game()
-#---------------------------------------------------------------------------------------------------------------------------------------
-#---------------------------------------------------------------------------------------------------------------------------------------
-#---------------------------------------------------------------------------------------------------------------------------------------
-def load_image():
-    #:( globals. My OOP is not great and I have 2 weeks left to finish this task as of the 25/8/2020.
-    #If I get time, i'll fix it up, for now however globals will have to do!
+
+def load_image(): #Make the image using pillo.
+    #My OOP is not great and I have 2 weeks left to finish this task as of the 25/8/2020.
     global pying
     loop_run = True
     numbY = 0
@@ -189,30 +176,57 @@ def load_image():
             loop_run = False
             pying = pygame.image.fromstring(img.tobytes(), img.size, img.mode)  
             img.save("scene1.png")
-#---------------------------------------------------------------------------------------------------------------------------------------
-#---------------------------------------------------------------------------------------------------------------------------------------
-#---------------------------------------------------------------------------------------------------------------------------------------
-
-
-
-
-
-
-
+def Credits_Func(): #Basic credits function, with a button!
+    credit = True
+    
+    while credit == True:
+        playerclickX,playerclickY = pygame.mouse.get_pos()
+        screen.fill((0,0,0))
+        tutorial_window = pygame.image.load('Credits/Credit_img.png')
+        screen.blit(tutorial_window, (0,0))
+        pygame.draw.rect(screen, (255,255,255), (700,25,65,20))
         
-def end_game():
+
+
+        for event in pygame.event.get():
+                    if event.type == pygame.QUIT:
+                        pygame.quit()
+                    elif event.type == pygame.MOUSEBUTTONDOWN:
+                        if 700 < playerclickX < 765 and 25 < playerclickY < 45:
+                            menu()
+        pygame.display.update()
+
     return
 
-
-
-
-
-
-
-
-
+def Tutorial_game(): #Tutorial for the game, kinda hard because of the lists and out of list errors.
+    global what_tutorial_you_on
+    Tutorial_loop = True
+    while Tutorial_loop == True:
+        if what_tutorial_you_on == 3:
+            what_tutorial_you_on = 0
+        if what_tutorial_you_on == -3:
+            what_tutorial_you_on = 0
+        playerclickX,playerclickY = pygame.mouse.get_pos()
+        screen.fill((0,0,0))
+        tutorial_window = pygame.image.load(list_for_tutorial[what_tutorial_you_on])
+        screen.blit(tutorial_window, (0,0))
+        pygame.draw.rect(screen, (255,255,255), (20, 340,20,60))
+        pygame.draw.rect(screen, (255,255,255), (760, 340,20,60))
+        pygame.draw.rect(screen, (0,0,0), (700,25,65,20))
+        for event in pygame.event.get():
+                    if event.type == pygame.QUIT:
+                        pygame.quit()
+                    elif event.type == pygame.MOUSEBUTTONDOWN:
+                        if 700 < playerclickX < 765 and 25 < playerclickY < 45:
+                            menu()
+                        if 20 < playerclickX < 40 and 340 < playerclickY < 400:
+                            what_tutorial_you_on -= 1
+                        if 760 < playerclickX < 780 and 340 < playerclickY < 400:
+                            what_tutorial_you_on += 1
+        pygame.display.update()
+    return
 def start_game():
-    #shhhh, I kinda need the all! I will learn OOP soon!
+    #shhhh, WAYYY to many globals, but hard not to use them without OOP!
     global movement
     global pause
     global pying
@@ -223,39 +237,28 @@ def start_game():
     global imgnumb_1
     global imgnumb_2
     global speed_of_bullet
+    global did_you_win_or_loose
     movement = True
     Player_Up = True
     Player_Down = True
     Player_Left = True
     Player_Right = True
     shoot_enemy_bullet = True
-    #Lists:
-    
-
+    #Variables
     player_x = 80
     player_y = 400
-    enemy_x = 750
+    enemy_x = 700
     enemy_y = 110
     escape_open = 0
     sprite_sheet_numb = 0
-    number_that_changes_For_bullet = 0
-    number_that_changes_For_player = 0
-    
-    #sprites
-    #images
-
-
-
-#---------------------------------------------------------------------------------------------------------------------------------------
-#---------------------------------------------------------------------------------------------------------------------------------------
-#---------------------------------------------------------------------------------------------------------------------------------------
+    Enemy_health = 0
+    Player_health = 0
     while True:
         playerclickX,playerclickY = pygame.mouse.get_pos()
         left_sprite = pygame.image.load(what_sprite_list[imgnumb_1][0])
         right_sprite = pygame.image.load(what_sprite_list[imgnumb_1][1])
         back_sprite = pygame.image.load(what_sprite_list[imgnumb_1][2])
         forward_sprite = pygame.image.load(what_sprite_list[imgnumb_1][3])
-        
         #Hit box for the main rectangle
         main_rect_hitbox = pygame.draw.rect(screen, (0,0,0), (player_x + 10, player_y, 20, 44))
         #Hit box for the Top, and it's just basically a short line
@@ -271,17 +274,10 @@ def start_game():
         Player_Down = True
         Player_Left = True
         Player_Right = True
-        for i in tile_1:
-            #Tile one, gets the data from the rectangle above and the rectangles from the list Grid
-            if main_rect_hitbox.colliderect(pygame.draw.rect(screen, (255,255,255), (i))):
-                #If the collision is true then: Make the player velocity 5
-                Player_Vel = 5
-                
-                
         for i in tile_2:
             #Tile 2, water, just changes the players velocity to make it seem like they are going through water
             if main_rect_hitbox.colliderect(pygame.draw.rect(screen, (255,255,255), (i))):
-                Player_Vel = 2
+                Player_Vel = Player_Vel // 3
         for i in tile_3:#collision stop movement
             #If the Top line colides with the third tile, then set the bool to false
             if movement_hitbox_rect_X_UPPER.colliderect(pygame.draw.rect(screen, (255,255,255), (i))):
@@ -320,21 +316,25 @@ def start_game():
         if imgnumb_1 == 4 or imgnumb_1 ==-1:
             speed_of_bullet = 2
             Player_Vel = 10
+
         if movement == True and pause == False:   
-            if number_that_changes_For_bullet == 50:
-                print("Game over")
-            elif number_that_changes_For_player == 20:
-                enemy_player_thatmoves = pygame.draw.rect(screen, (255,0,0), (750, player_y, 50, 50))
-                enemy_player_thatmoves_1 = pygame.draw.rect(screen, (0,0,0), (750, player_y, 50, number_that_changes_For_bullet))
+            if Enemy_health == 50:
+                did_you_win_or_loose = 0
+                game_over_win()
+                break
+            elif Player_health == 20:
+                did_you_win_or_loose = 1
+                game_over_win()
+                break
             else:
-                enemy_player_thatmoves = pygame.draw.rect(screen, (255,0,0), (750, player_y, 50, 50))
-                enemy_player_thatmoves_1 = pygame.draw.rect(screen, (0,0,0), (750, player_y, 50, number_that_changes_For_bullet))
+                enemy_player_thatmoves = pygame.draw.rect(screen, (255,0,0), (700, player_y, 50, 50))
+                enemy_player_thatmoves_1 = pygame.draw.rect(screen, (0,0,0), (700, player_y, 50, Enemy_health))
                 player_health_bar = pygame.draw.rect(screen, (0,0,0), (player_x + 9, player_y - 8, 22, 5))
-                player_health_bar = pygame.draw.rect(screen, (255,0,0), (player_x + 9, player_y - 8, 22 - number_that_changes_For_player, 5))
-                
-                        
-                
+                player_health_bar = pygame.draw.rect(screen, (255,0,0), (player_x + 9, player_y - 8, 22 - Player_health, 5))
+
                 for enemy_bullet in enemy_bullets:
+                        howmanyinlist = len(enemy_bullet)
+                        howmanyinlist_2 = len(enemy_bullets)
                         if enemy_bullet_shoot_x > 0 and enemy_bullet_shoot_x < 800 and enemy_bullet_shoot_y > 0 and enemy_bullet_shoot_y < 800:
                             enemy_bullet[0] += 15*math.cos(enemy_bullet[2])
                             enemy_bullet[1] += 15*math.sin(enemy_bullet[2])
@@ -343,18 +343,8 @@ def start_game():
                             enemy_bullets.remove(enemy_bullet)
                         elif main_rect_hitbox.colliderect(pygame.draw.rect(screen, (0,0,0), (enemy_bullet_shoot_rect))):
                             enemy_bullets.remove(enemy_bullet)
-                            number_that_changes_For_player += 2
-
-                        
-                            
-                        for i in tile_3:
-                            if enemy_bullet_shoot_rect.colliderect(pygame.draw.rect(screen, (255,255,255), (i), 1)):
-                                enemy_bullets.remove(enemy_bullet)
-
-
-
+                            Player_health += 2
                 for player_bullet in player_bullets:
-                    
                         if player_bullet_shoot_x >= -50 and player_bullet_shoot_x <= 850 and player_bullet_shoot_y >= -50 and player_bullet_shoot_y <= 850:
                             player_bullet[0] += speed_of_bullet*math.cos(player_bullet[2])
                             player_bullet[1] += speed_of_bullet*math.sin(player_bullet[2])
@@ -363,27 +353,16 @@ def start_game():
                             player_bullets.remove(player_bullet)
                         if player_bullet_shoot_rect.colliderect(enemy_player_thatmoves) or player_bullet_shoot_rect.colliderect(enemy_player_thatmoves_1): 
                             player_bullets.remove(player_bullet)
-                            number_that_changes_For_bullet += 1
-                        for i in tile_3:
-                            if player_bullet_shoot_rect.colliderect(pygame.draw.rect(screen, (255,255,255), (i), 1)):
-                                player_bullets.remove(player_bullet)
-                                print(player_bullet)
-                            else:
-                                pass
-             
-
-
+                            Enemy_health += 1
                 #If movement is true, E.G When it's not looking at inventory then run the following
                 if event.type == move_down_event:
                     enemy_bullet_shoot_y = player_y
-                    enemy_bullet_shoot_x = 750
+                    enemy_bullet_shoot_x = 700
                     enemy_bullets.append([enemy_bullet_shoot_x, enemy_bullet_shoot_y + 25, math.atan2(player_y - enemy_bullet_shoot_y, player_x - enemy_bullet_shoot_x)])
                 if event.type == MOUSEBUTTONDOWN:
                     player_bullet_shoot_y = player_y
                     player_bullet_shoot_x = player_x
                     player_bullets.append([player_bullet_shoot_x, player_bullet_shoot_y + 25, math.atan2(playerclickY - player_bullet_shoot_y, playerclickX - player_bullet_shoot_x)])
-                    
-                    
 
                 elif keys[pygame.K_w] and keys[pygame.K_d] or keys[pygame.K_UP] and keys[pygame.K_RIGHT]:
                     #If the key W and D are pressed, then print the following
@@ -447,7 +426,9 @@ def start_game():
                 #Exit movement rect
                 pygame.draw.rect(screen, (0,0,0), (475, 125, 80, 30))
                 backgroundfile = pygame.image.load(what_sprite_list[imgnumb_1][imgnumb_2])
+                background_file_2 = pygame.image.load(list_for_bulletspeed[imgnumb_1])
                 screen.blit(backgroundfile, (300,225))
+                screen.blit(background_file_2, (250,475))
                 pygame.display.update()
                 movement = False
                 for event in pygame.event.get():
@@ -471,29 +452,34 @@ def start_game():
                             if 125 < playerclickY < 155:
                                 pause = False
                                 movement = True
-                                
-                                
-                
-
-
-                    
-                    
-                
-
             else:
                 movement = True
                 pause = False
                 screen.blit(back_sprite, (player_x, player_y))
-                
-                    
-            #functions
-            #check colision function
-            
             pygame.display.update()
 
-#---------------------------------------------------------------------------------------------------------------------------------------
-#---------------------------------------------------------------------------------------------------------------------------------------
-#---------------------------------------------------------------------------------------------------------------------------------------            
-#Basically the main run function, it opens the text file and imports all of the neccesary data!
+def game_over_win():
+    global did_you_win_or_loose
+    game_over_win = True
+    while game_over_win == True:
+        playerclickX,playerclickY = pygame.mouse.get_pos()
+        screen.fill((0,0,0))
+        game_win = pygame.image.load(game_win_or_loss[did_you_win_or_loose])
+        screen.blit(game_win, (0,0))
+        
+        for event in pygame.event.get():
+                    if event.type == pygame.QUIT:
+                        pygame.quit()
+                    elif event.type == pygame.MOUSEBUTTONDOWN:
+                        if 150 < playerclickX < 280 and 540 < playerclickY < 610:
+                            menu()
+                        if 510 < playerclickX < 630 and 540 < playerclickY < 610:
+                            pygame.quit()
+        pygame.display.update()
+    return
+
+#Start game!
 game_intro_scene()
-#Start_game_import_grid()
+
+#Total Lines: 485
+#Total comments: 71
